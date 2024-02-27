@@ -14,7 +14,7 @@ namespace GameOfLife
     {
         int cells = 8;
         int[,] colorsArray;
-        int rows = 60;
+        int rows = 600 / 8;
         bool flag = true;
         public Form1()
         {
@@ -36,7 +36,6 @@ namespace GameOfLife
             colorsArray[thisY / cells, thisX / cells] = colorsArray[thisY / cells, thisX / cells] == 1 ? 0 : 1;
             Invalidate();
         }
-
         protected override void OnPaint(PaintEventArgs e)
         {
             InitCells(e.Graphics);
@@ -74,7 +73,7 @@ namespace GameOfLife
         private void Clear()
         {
             colorsArray = new int[(ClientSize.Width - 150) / cells, ClientSize.Height / cells];
-            rows = 60;
+            rows = ClientSize.Height / cells;
             Invalidate();
         }
         private void Display()
@@ -118,8 +117,8 @@ namespace GameOfLife
         {
             int count = 0;
 
-            int rows = colorsArray.GetLength(0);
-            int cols = colorsArray.GetLength(1);
+            int _rows = colorsArray.GetLength(0);
+            int _cols = colorsArray.GetLength(1);
 
             for (int i = x - 1; i <= x + 1; i++)
             {
@@ -128,8 +127,8 @@ namespace GameOfLife
                     if (i == x && j == y)
                         continue;
 
-                    int neighborX = (i + rows) % rows;
-                    int neighborY = (j + cols) % cols;
+                    int neighborX = (i + _rows) % _rows;
+                    int neighborY = (j + _cols) % _cols;
 
                     if (colorsArray[neighborX, neighborY] == 1)
                     {
