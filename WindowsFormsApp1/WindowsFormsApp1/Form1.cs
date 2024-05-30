@@ -1,128 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using MathNet.Numerics.LinearAlgebra;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        private int codeState;
-        private Random rnd = new Random();
-        private Dictionary<int, string> weather;
-        private double[,] P = new double[,] { { 0.3, 0.5, 0.2 }, { 0.3, 0.6, 0.1 }, { 0.1, 0.4, 0.5 } };
         public Form1()
         {
             InitializeComponent();
-            codeState = 0;
-            weather = new Dictionary<int, string>
+        }
+
+        Random random = new Random();
+        const double μ = 0.0005;
+        const double σ = 0.01;
+        const int t = 1;
+        double rateEuro, rateDollar, day;
+        double butFlag = 0;
+
+        private void btPredict_Click_1(object sender, EventArgs e)
+        {
+            rateEuro = (double)edEuroRate.Value;
+            rateDollar = (double)edDollarRate.Value;
+            day = 0;
+
+            if (butFlag == 0)
             {
-                {0, "Осадки" },
-                {1, "Облачно" },
-                {2, "Ясно" }
-            };
-            var stationaryProbabilities = stationaryProbabilitiesCalc(P);
-            //осадки
-            label32.Text = $"{Math.Round(stationaryProbabilities[0], 4)}";
-            //облачно
-            label31.Text = $"{Math.Round(stationaryProbabilities[1], 4)}";
-            //ясно
-            label30.Text = $"{Math.Round(stationaryProbabilities[2], 4)}";
-        }
-        public static Vector<double> stationaryProbabilitiesCalc(double[,] transitionMatrix)
-        {
-            var matrixP = Matrix<double>.Build.DenseOfArray(transitionMatrix);
-            var n = matrixP.RowCount;
+                chart1.Series[0].Points.Clear();
+                chart1.Series[0].Points.AddXY(day, rateEuro);
+                chart1.Series[1].Points.Clear();
+                chart1.Series[1].Points.AddXY(day, rateDollar);
 
-            // Транспонируем матрицу
-            var transposedP = matrixP.Transpose();
+                butFlag = 1;
+                btPredict.Text = "STOP";
 
-            // Создаем матрицу A = P^T - I
-            var identity = Matrix<double>.Build.DenseIdentity(n);
-            var A = transposedP - identity;
-
-            // Добавляем условие нормировки: сумма вероятностей = 1
-            var ones = Vector<double>.Build.Dense(n, 1.0);
-            A = A.InsertRow(n, ones.ToRowMatrix().Row(0));
-
-            // Создаем вектор b
-            var b = Vector<double>.Build.Dense(n + 1);
-            b[n] = 1.0;
-
-            // Решаем систему линейных уравнений
-            var pi = A.Solve(b);
-            return pi;
-        }
-        private void button1_Click(object sender, EventArgs e)
-        {
-            timer1.Start();
-        }
-        private int countStatus(int[] states, int state)
-        {
-            int value = 0;
-            for (int i = 0; i < states.Length; i++)
-            {
-                if (states[i] == state) value++;
+                timer1.Start();
             }
-            return value;
-        }
-        private void button2_Click(object sender, EventArgs e)
-        {
-            timer1.Stop();
-            
-            int[] states = RunMarkovChainSimulation(P, codeState, 10000);
-            //осадки
-            label23.Text = $"{(double)countStatus(states, 0) / 10000.0}";
-            //облачно
-            label22.Text = $"{(double)countStatus(states, 1) / 10000.0}";
-            //ясно
-            label21.Text = $"{(double)countStatus(states, 2) / 10000.0}";
-        }
-
-        private void timer1_Tick_1(object sender, EventArgs e)
-        {
-            int[] states = RunMarkovChainSimulation(P, codeState, 2);
-            codeState = states[states.Length - 1];
-            label18.Text = weather[codeState];
-        }
-
-        public int[] RunMarkovChainSimulation(double[,] P, int codeState = 0, int numIters = 2)
-        {
-            int numStates = P.GetLength(0);
-            int[] states = new int[numIters];
-
-            states[0] = codeState; 
-
-            for (int t = 1; t < numIters; t++)
+            else
             {
-                int currentState = states[t - 1];
-                double[] probabilities = new double[numStates];
-                for (int j = 0; j < numStates; j++)
-                {
-                    probabilities[j] = P[currentState, j];
-                }
-
-                states[t] = SampleFromMultinomial(probabilities);
+                timer1.Stop();
+                btPredict.Text = "RESTART";
+                butFlag = 0;
             }
-
-            return states;
         }
-
-        private int SampleFromMultinomial(double[] probabilities)
+        private double normalValueGeneration()
         {
-            double cumulative = 0.0;
-            double r = rnd.NextDouble();
-
-            for (int i = 0; i < probabilities.Length; i++)
+            int n = 12;
+            double rv = 0;
+            for (int j = 0; j < n; j++)
             {
-                cumulative += probabilities[i];
-                if (r < cumulative)
-                {
-                    label10.Text = $"{probabilities[i]}";
-                    return i;
-                }
+                rv += random.NextDouble();
             }
-            return probabilities.Length - 1;
+            return eval(rv - 6);
+        }
+        private double eval(double rv)
+        {
+            return rv + (1 / 240.0) * (Math.Pow(rv, 3) - 3 * rv);
+        }
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            day += 1;
+            rateEuro = rateEuro * Math.Exp((μ - (Math.Pow(σ, 2) / 2)) * 1 + σ * Math.Sqrt(1) * normalValueGeneration());
+            rateDollar = rateDollar * Math.Exp((μ - (Math.Pow(σ, 2) / 2)) * 1 + σ * Math.Sqrt(1) * normalValueGeneration());
+            chart1.Series[0].Points.AddXY(day, rateEuro);
+            chart1.Series[1].Points.AddXY(day, rateDollar);
         }
     }
 }
