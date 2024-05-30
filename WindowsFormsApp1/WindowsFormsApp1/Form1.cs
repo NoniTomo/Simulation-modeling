@@ -28,6 +28,14 @@ namespace WindowsFormsApp1
             label31.Text = $"{Math.Round(stationaryProbabilities[1], 4)}";
             //ясно
             label30.Text = $"{Math.Round(stationaryProbabilities[2], 4)}";
+
+            int[] states = RunMarkovChainSimulation(P, codeState, 10000);
+            //осадки
+            label23.Text = $"{(double)countStatus(states, 0) / 10000.0}";
+            //облачно
+            label22.Text = $"{(double)countStatus(states, 1) / 10000.0}";
+            //ясно
+            label21.Text = $"{(double)countStatus(states, 2) / 10000.0}";
         }
         public static Vector<double> stationaryProbabilitiesCalc(double[,] transitionMatrix)
         {
@@ -69,14 +77,6 @@ namespace WindowsFormsApp1
         private void button2_Click(object sender, EventArgs e)
         {
             timer1.Stop();
-            
-            int[] states = RunMarkovChainSimulation(P, codeState, 10000);
-            //осадки
-            label23.Text = $"{(double)countStatus(states, 0) / 10000.0}";
-            //облачно
-            label22.Text = $"{(double)countStatus(states, 1) / 10000.0}";
-            //ясно
-            label21.Text = $"{(double)countStatus(states, 2) / 10000.0}";
         }
 
         private void timer1_Tick_1(object sender, EventArgs e)

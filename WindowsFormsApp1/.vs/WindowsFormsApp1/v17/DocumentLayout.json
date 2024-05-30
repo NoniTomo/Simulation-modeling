@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\Simulation-modeling\\WindowsFormsApp1\\",
+  "WorkspaceRootPath": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\12lab\\WindowsFormsApp1\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4E56BA29-E518-47E2-9DE7-F71725B4DF0A}|WindowsFormsApp1\\WindowsFormsApp1.csproj|c:\\__nikita__\\__university\\3kurs\\simulation_modeling\\simulation-modeling\\windowsformsapp1\\windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{4E56BA29-E518-47E2-9DE7-F71725B4DF0A}|WindowsFormsApp1\\WindowsFormsApp1.csproj|c:\\__nikita__\\__university\\3kurs\\simulation_modeling\\12lab\\windowsformsapp1\\windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4E56BA29-E518-47E2-9DE7-F71725B4DF0A}|WindowsFormsApp1\\WindowsFormsApp1.csproj|solutionrelative:windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4E56BA29-E518-47E2-9DE7-F71725B4DF0A}|WindowsFormsApp1\\WindowsFormsApp1.csproj|C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\Simulation-modeling\\WindowsFormsApp1\\windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{4E56BA29-E518-47E2-9DE7-F71725B4DF0A}|WindowsFormsApp1\\WindowsFormsApp1.csproj|C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\12lab\\WindowsFormsApp1\\windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{4E56BA29-E518-47E2-9DE7-F71725B4DF0A}|WindowsFormsApp1\\WindowsFormsApp1.csproj|solutionrelative:windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
@@ -24,11 +24,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Form1.cs",
-              "DocumentMoniker": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\Simulation-modeling\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs",
+              "DocumentMoniker": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\12lab\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs",
               "RelativeDocumentMoniker": "WindowsFormsApp1\\Form1.cs",
-              "ToolTip": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\Simulation-modeling\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs",
+              "ToolTip": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\12lab\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs",
               "RelativeToolTip": "WindowsFormsApp1\\Form1.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAANAAAA",
+              "ViewState": "AQIAABwAAAAAAAAAAAAQwE4AAAAaAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-29T04:06:20.301Z",
               "EditorCaption": ""
@@ -37,10 +37,10 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Form1.cs [Design]",
-              "DocumentMoniker": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\Simulation-modeling\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs",
+              "DocumentMoniker": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\12lab\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs",
               "RelativeDocumentMoniker": "WindowsFormsApp1\\Form1.cs",
               "ToolTip": "C:\\__nikita__\\__University\\3kurs\\Simulation_modeling\\12lab\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs [Design]",
-              "RelativeToolTip": "..\\..\\12lab\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs [Design]",
+              "RelativeToolTip": "WindowsFormsApp1\\Form1.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-29T02:31:50.04Z"
             }
