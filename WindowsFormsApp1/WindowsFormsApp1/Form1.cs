@@ -1,128 +1,166 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using MathNet.Numerics.LinearAlgebra;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        private int codeState;
-        private Random rnd = new Random();
-        private Dictionary<int, string> weather;
-        private double[,] P = new double[,] { { 0.3, 0.5, 0.2 }, { 0.3, 0.6, 0.1 }, { 0.1, 0.4, 0.5 } };
+        private int timeBeforeNextClient;
+        public static Random random = new Random();
+
+        private EventQueue _eventQueue;
+
         public Form1()
         {
             InitializeComponent();
-            codeState = 0;
-            weather = new Dictionary<int, string>
-            {
-                {0, "Осадки" },
-                {1, "Облачно" },
-                {2, "Ясно" }
-            };
-            var stationaryProbabilities = stationaryProbabilitiesCalc(P);
-            //осадки
-            label32.Text = $"{Math.Round(stationaryProbabilities[0], 4)}";
-            //облачно
-            label31.Text = $"{Math.Round(stationaryProbabilities[1], 4)}";
-            //ясно
-            label30.Text = $"{Math.Round(stationaryProbabilities[2], 4)}";
-
-            int[] states = RunMarkovChainSimulation(P, codeState, 10000);
-            //осадки
-            label23.Text = $"{(double)countStatus(states, 0) / 10000.0}";
-            //облачно
-            label22.Text = $"{(double)countStatus(states, 1) / 10000.0}";
-            //ясно
-            label21.Text = $"{(double)countStatus(states, 2) / 10000.0}";
         }
-        public static Vector<double> stationaryProbabilitiesCalc(double[,] transitionMatrix)
+
+        public void richTextBoxAdd(string data)
         {
-            var matrixP = Matrix<double>.Build.DenseOfArray(transitionMatrix);
-            var n = matrixP.RowCount;
-
-            // Транспонируем матрицу
-            var transposedP = matrixP.Transpose();
-
-            // Создаем матрицу A = P^T - I
-            var identity = Matrix<double>.Build.DenseIdentity(n);
-            var A = transposedP - identity;
-
-            // Добавляем условие нормировки: сумма вероятностей = 1
-            var ones = Vector<double>.Build.Dense(n, 1.0);
-            A = A.InsertRow(n, ones.ToRowMatrix().Row(0));
-
-            // Создаем вектор b
-            var b = Vector<double>.Build.Dense(n + 1);
-            b[n] = 1.0;
-
-            // Решаем систему линейных уравнений
-            var pi = A.Solve(b);
-            return pi;
+            richTextBox1.AppendText(data);
         }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (timeBeforeNextClient == 0)
+            {
+                _eventQueue.AddClient();
+                timeBeforeNextClient = random.Next(2, 5);
+            }
+            timeBeforeNextClient--;
+            _eventQueue.Iteration();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
+            Label[] labels = { label4, label5, label6 };
+            _eventQueue = new EventQueue(this, labels, label8);
             timer1.Start();
         }
-        private int countStatus(int[] states, int state)
-        {
-            int value = 0;
-            for (int i = 0; i < states.Length; i++)
-            {
-                if (states[i] == state) value++;
-            }
-            return value;
-        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             timer1.Stop();
         }
+    }
 
-        private void timer1_Tick_1(object sender, EventArgs e)
+    class Client
+    {
+        public int Id { get; private set; }
+
+        public Client(int id)
         {
-            int[] states = RunMarkovChainSimulation(P, codeState, 2);
-            codeState = states[states.Length - 1];
-            label18.Text = weather[codeState];
+            Id = id;
         }
 
-        public int[] RunMarkovChainSimulation(double[,] P, int codeState = 0, int numIters = 2)
+        public string GetQueueMessage(int queueNum)
         {
-            int numStates = P.GetLength(0);
-            int[] states = new int[numIters];
+            return $"Клиент {Id + 1} встал в очередь под номером {queueNum}\n";
+        }
+    }
 
-            states[0] = codeState; 
+    class Worker
+    {
+        public int Id { get; private set; }
+        public int Timer { get; private set; }
+        private Client currentClient;
+        private Label label;
 
-            for (int t = 1; t < numIters; t++)
-            {
-                int currentState = states[t - 1];
-                double[] probabilities = new double[numStates];
-                for (int j = 0; j < numStates; j++)
-                {
-                    probabilities[j] = P[currentState, j];
-                }
-
-                states[t] = SampleFromMultinomial(probabilities);
-            }
-
-            return states;
+        public Worker(int id, Label label)
+        {
+            Id = id;
+            this.label = label;
         }
 
-        private int SampleFromMultinomial(double[] probabilities)
+        public void SetClient(Client client)
         {
-            double cumulative = 0.0;
-            double r = rnd.NextDouble();
+            Timer = Form1.random.Next(5, 15);
+            currentClient = client;
+            label.Text = $"Клиент {client.Id + 1}";
+        }
 
-            for (int i = 0; i < probabilities.Length; i++)
+        public void DecreaseTimer()
+        {
+            if (Timer > 0)
             {
-                cumulative += probabilities[i];
-                if (r < cumulative)
+                Timer--;
+            }
+        }
+
+        public bool IsFree => Timer == 0;
+
+        public string GetCurrentClientMessage()
+        {
+            return $"Клиент {currentClient.Id + 1} на обслуживании у работника {Id}\n";
+        }
+    }
+
+    class EventQueue
+    {
+        private Worker[] workers;
+        private Queue<Client> clientQueue;
+        private int clientIdCounter;
+        private Form1 form;
+        private Label labelQueueLength;
+
+        public EventQueue(Form1 form, Label[] labels, Label labelQueueLength)
+        {
+            this.form = form;
+            this.labelQueueLength = labelQueueLength;
+            workers = new Worker[3];
+            clientQueue = new Queue<Client>();
+            clientIdCounter = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                workers[i] = new Worker(i + 1, labels[i]);
+            }
+        }
+
+        public void Iteration()
+        {
+            foreach (var worker in workers)
+            {
+                if (worker.IsFree && clientQueue.Count > 0)
                 {
-                    label10.Text = $"{probabilities[i]}";
-                    return i;
+                    var client = clientQueue.Dequeue();
+                    worker.SetClient(client);
+                    form.richTextBoxAdd(worker.GetCurrentClientMessage());
+                }
+                worker.DecreaseTimer();
+            }
+            labelQueueLength.Text = $"{clientQueue.Count}";
+        }
+
+        public void AddClient()
+        {
+            var client = new Client(clientIdCounter++);
+            bool assigned = false;
+
+            foreach (var worker in workers)
+            {
+                if (worker.IsFree && clientQueue.Count == 0)
+                {
+                    worker.SetClient(client);
+                    form.richTextBoxAdd(worker.GetCurrentClientMessage());
+                    assigned = true;
+                    break;
                 }
             }
-            return probabilities.Length - 1;
+
+            if (!assigned)
+            {
+                clientQueue.Enqueue(client);
+                form.richTextBoxAdd(client.GetQueueMessage(clientQueue.Count));
+            }
         }
     }
 }
